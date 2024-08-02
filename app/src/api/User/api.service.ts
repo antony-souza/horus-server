@@ -2,6 +2,7 @@ import { BadRequestException, Injectable, InternalServerErrorException, NotFound
 import { PrismaClient, HorusUser ,Role } from '@prisma/client';
 import { UpdateUserDto } from './DTO/update.dto';
 import { BaseUserDto } from './DTO/base.user.dto';
+import {argon2id, hash} from  'argon2'
 
 const prisma = new PrismaClient()
 
@@ -23,11 +24,18 @@ export class ApiService {
             throw new BadRequestException(`Usuário com email ${userData.email} já existe!`)
         }
 
+        const hashPass = await hash(userData.password,{
+            type:argon2id,
+            memoryCost: 2048,
+            timeCost:2,
+            parallelism:1
+        })
+
         return await prisma.horusUser.create({
           data: {
             name: userData.name,
             email: userData.email,
-            password: userData.password,
+            password: hashPass,
             phone: userData.phone,
             address: userData.address,
             role: userData.role || Role.USER
@@ -37,7 +45,7 @@ export class ApiService {
         console.error(error)   
         throw new InternalServerErrorException("Erro interno ao criar usuário.")
     }
-      } 
+} 
     
       async updateUser(userData: UpdateUserDto): Promise<HorusUser> {
 
@@ -84,3 +92,5 @@ export class ApiService {
         }
     }
 }
+
+
