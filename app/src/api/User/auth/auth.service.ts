@@ -4,33 +4,41 @@ import { HorusUser, Role } from '@prisma/client';
 
 @Injectable()
 export class AuthJwtService {
+    constructor(private jwtService: JwtService) {}
 
-    constructor(
-        private jwtService: JwtService) {}
+    generateToken(user: HorusUser): string {
+        const payload = { id: user.id, role: user.role };
+        const secret = process.env.TOKEN_KEY;
+        return this.jwtService.sign(payload, { secret });
+    }
 
-    generateToken(user:HorusUser): string{
-        const payload = {id:user.id, role: user.role}
-        return this.jwtService.sign(payload);
-    };
-
-    verifyToken(token: string):{id:string, role:Role}{
+    verifyToken(token: string): { id: string; role: Role } {
         try {
-            return this.jwtService.verify(token)
+            return this.jwtService.verify(token, { secret: process.env.TOKEN_KEY });
         } catch (error) {
-            throw new UnauthorizedException('Token inválido meu patrão!')
+            console.error("Erro ao verificar token:", error);
+            throw new UnauthorizedException({
+                message: 'Token inválido, meu patrão!',
+                status: 401,
+            });
         }
     }
 
-    getToken(authorizationHeader: string): string{
-        if(!authorizationHeader){
-            throw new UnauthorizedException('Precisa de token para autorizar!')
+    getToken(authorizationHeader: string): string {
+        if (!authorizationHeader) {
+            throw new UnauthorizedException({
+                message: 'Token não fornecido',
+                status: 401,
+            });
         }
 
-        const [type,token] = authorizationHeader.split(' ')
-        if(type !== 'Bearer'){
-            throw new UnauthorizedException('Tipo de token inválido!')
+        const [type, token] = authorizationHeader.split(' ');
+        if (type !== 'Bearer' || !token) {
+            throw new UnauthorizedException({
+                message: 'Tipo de token inválido ou token não fornecido!',
+                status: 401,
+            });
         }
         return token;
     }
-        
-};
+}

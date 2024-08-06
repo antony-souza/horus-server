@@ -1,8 +1,8 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { HorusUser, PrismaClient } from "@prisma/client";
-import { BaseUserDto } from "./DTO/base.user.dto";
 import { verify } from "argon2";
-import { AuthJwtService } from "./auth/auth.service";
+import { AuthJwtService } from "./auth.service";
+import { SigInDto } from "./DTO/auth.dto";
 
 @Injectable()
 export class LoginAuthService {
@@ -12,7 +12,7 @@ export class LoginAuthService {
         private readonly prisma:PrismaClient,
         private readonly AuthToken:AuthJwtService) {}
 
-    async login(userData: BaseUserDto): Promise<{token:string; user:HorusUser}>{
+    async login(userData: SigInDto): Promise<{token:string}>{
         const {email, password} = userData;
 
         const user = await this.prisma.horusUser.findUnique({
@@ -25,7 +25,7 @@ export class LoginAuthService {
 
         const token = this.AuthToken.generateToken(user)
     
-        return {token,user};
+        return {token};
     }
 
     async validateToken(token: string): Promise<HorusUser> {
