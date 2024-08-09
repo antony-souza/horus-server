@@ -21,19 +21,22 @@ model HorusUser {
   phone     String
   address   String
   role      Role        @default(USER)
+  company   String?
+  companyId String?     @db.ObjectId
   createdAt DateTime?   @default(now()) @map(name: "created_at")
   updatedAt DateTime?   @default(now()) @map(name: "updated_at")
-  company   String?
 }
 
 model HorusProduct {
   id        String       @id @default(auto()) @map("_id") @db.ObjectId
   name      String
-  price     Float
   quantity  Int
   packaging String
   validaty  String?      @map(name:"expiration_date")
-  userId    String
+  user      String?
+  company   String?
+  userId    String?      @db.ObjectId
+  companyId String?      @db.ObjectId
   createdAt DateTime?    @default(now()) @map(name: "created_at")
   updatedAt DateTime?    @default(now()) @map(name: "updated_at")
 }

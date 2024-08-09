@@ -1,13 +1,9 @@
-import { IsNotEmpty, IsNumber, IsString, IsUUID } from "class-validator";
+import { IsNotEmpty, IsNumber, IsString } from "class-validator";
 
 export class ProductDto {
     @IsString()
     @IsNotEmpty()
     name: string;
-
-    @IsNumber()
-    @IsNotEmpty()
-    price: number;
 
     @IsNumber()
     @IsNotEmpty()
@@ -19,5 +15,5 @@ export class ProductDto {
 
     @IsString()
     @IsNotEmpty()
-    expirationDate?: string;
+    expirationDate?: string;2
 }

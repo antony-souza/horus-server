@@ -6,7 +6,7 @@ import { Role } from '@prisma/client';
 import { JwtAuthGuard } from '../User/auth/auth.guard';
 import { Roles } from 'prisma/roles.decorator';
 
-@UseGuards(JwtAuthGuard,RolesGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('/products')
 export class ProductController {
     constructor(private readonly productService: ProductService) {}
@@ -14,9 +14,10 @@ export class ProductController {
     @Roles(Role.ADMIN, Role.MANAGER)
     @Post('/create')
     async createProduct(@Body() productData: ProductDto, @Request() req): Promise<ProductResponse> {
-        // ID do usuário esteja no token de autenticação, obtido do token ou sessão
+        // ID do usuário e empresa que esteja no token de auth
         const userId = req.user.id;
+        const companyId = req.user.companyId;
 
-        return this.productService.createProduct(productData,userId);
+        return this.productService.createProduct(productData, userId, companyId);
     }
 }

@@ -30,27 +30,21 @@ export class ApiService {
             const existingUser = await prisma.horusUser.findUnique({
                 where: { email: userData.email },
             });
-    
+            
             if (existingUser) {
                 throw new BadRequestException('Usuário já existe, meu patrão!');
             }
 
             const existingCompany = await prisma.horusCompany.findUnique({
-                where: {name: userData.company}
-            })
-            
-            let companyId
+                where: { name: userData.company}
+            });
 
-            if(existingCompany){
-                companyId = existingCompany.id
-            
-            }else{
-                const newCompany = await prisma.horusCompany.create({
-                    data: {name:userData.company}
-                })
+            //Usar ? : é o mesmo que If e else
+            const companyId = existingCompany 
+            ?existingCompany.id
+            :(await prisma.horusCompany.create({data:{name: userData.company}})).id
+            //Se a company não existir, ele vai criar e atribuir o id no campo "companyId" depois de criado
 
-                companyId = newCompany.id
-            }
 
             const hashPass = await hash(userData.password, {
                 type: argon2id,
@@ -67,9 +61,11 @@ export class ApiService {
                     phone: userData.phone,
                     address: userData.address,
                     role: userData.role || Role.USER,
-                    company: companyId
-        }});
-    
+                    company: userData.company, 
+                    companyId: companyId, 
+                }
+            });
+
             return {
                 message: "Usuário criado com sucesso!",
                 user: newUser,
@@ -89,12 +85,12 @@ export class ApiService {
     async updateUser(userData: UpdateUserDto): Promise<UserResponse> {
 
         try {
-            // Verifica se o ID foi fornecido
+            
             if (!userData.id) {
                 throw new BadRequestException('ID do usuário não fornecido.');
             }
     
-            // Encontra o usuário pelo ID
+            
             const existingUser = await prisma.horusUser.findUnique({
                 where: { id: userData.id },
             });

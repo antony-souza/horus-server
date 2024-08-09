@@ -7,12 +7,12 @@ export class AuthJwtService {
     constructor(private jwtService: JwtService) {}
 
     generateToken(user: HorusUser): string {
-        const payload = { id: user.id, role: user.role };
+        const payload = { id: user.id, role: user.role, companyId: user.companyId };
         const secret = process.env.TOKEN_KEY;
         return this.jwtService.sign(payload, { secret });
     }
 
-    verifyToken(token: string): { id: string; role: Role } {
+    verifyToken(token: string): { id: string; role: Role; companyId:string } {
         try {
             return this.jwtService.verify(token, { secret: process.env.TOKEN_KEY });
         } catch (error) {

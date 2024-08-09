@@ -12,7 +12,7 @@ export interface ProductResponse {
 @Injectable()
 export class ProductService {
 
-    async createProduct(productData: ProductDto, userId: string): Promise<ProductResponse> {
+    async createProduct(productData: ProductDto, userId: string, companyId: string): Promise<ProductResponse> {
         try {
             
             const existingUser = await prisma.horusUser.findUnique({
@@ -23,15 +23,24 @@ export class ProductService {
                 throw new BadRequestException(`Usuário com ID [${userId}] não encontrado!`);
             }
 
-            // Cria o produto e associa ao usuário
+            const existingCompany = await prisma.horusCompany.findUnique({
+                where: { id: companyId },
+            });
+
+            if (!existingCompany) {
+                throw new BadRequestException(`Empresa com ID [${companyId}] não encontrada!`);
+            }
+
             const newProduct = await prisma.horusProduct.create({
                 data: {
                     name: productData.name,
-                    price: productData.price,
                     quantity: productData.quantity,
                     packaging: productData.packaging,
                     validaty:  productData.expirationDate,
-                    userId: existingUser.id,  // Associar o produto ao usuário
+                    user: existingUser.name,
+                    company: existingUser.company,
+                    userId: existingUser.id,
+                    companyId: existingUser.companyId
                 },
             });
 

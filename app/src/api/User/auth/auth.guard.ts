@@ -18,7 +18,7 @@ export class JwtAuthGuard implements CanActivate {
         const token = this.authJwtService.getToken(authorizationHeader);
         const user = this.authJwtService.verifyToken(token);
 
-        // Adiciona o usuário ao request para uso posterior
+        // Adiciona o usuário na rota para ser usado depois patrão, ai fica a mágica
         request.user = user;
 
         return true; // Retorna true se a autenticação de certo
