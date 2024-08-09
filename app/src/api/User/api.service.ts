@@ -146,6 +146,7 @@ export class ApiService {
             return {
                 message: `Usuário com ID [${id}] foi deletado(a) com sucesso!`,
             };
+            
         } catch (error) {
             console.error("Erro ao deletar usuário:", error);
             if (error instanceof NotFoundException) {

@@ -31,7 +31,9 @@ model HorusProduct {
   name      String
   price     Float
   quantity  Int
-  validaty  DateTime?    @map(name:"expiration_date")
+  packaging String
+  validaty  String?      @map(name:"expiration_date")
+  userId    String
   createdAt DateTime?    @default(now()) @map(name: "created_at")
   updatedAt DateTime?    @default(now()) @map(name: "updated_at")
 }

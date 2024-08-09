@@ -32,7 +32,7 @@ export class ApiController {
     async create(@Body() BaseUserDto:BaseUserDto):Promise<UserResponse> {
         return this.HorusService.createUser(BaseUserDto)
     };
-
+    
     @Put('/:id')
     @Roles(Role.ADMIN,Role.MANAGER)
     async update(@Param('id') id:string, @Body() UpdateUserDTO:UpdateUserDto):Promise<UserResponse> {
