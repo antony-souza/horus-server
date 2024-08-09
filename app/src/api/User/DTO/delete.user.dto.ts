@@ -26,6 +26,10 @@ export class DeleteUserDto {
     @IsOptional()
     address?: string;
 
+    @IsString()
+    @IsOptional()
+    company?: string;
+
     @IsEnum(Role)
     @IsOptional()
     role?: Role;

@@ -1,4 +1,4 @@
-import { IsEnum, IsNotEmpty, IsOptional, IsString, IsUUID } from "class-validator";
+import { IsArray, IsEnum, IsNotEmpty, IsOptional, IsString, IsUUID } from "class-validator";
 import { Role } from "@prisma/client"
 
 export class BaseUserDto {
@@ -27,6 +27,10 @@ export class BaseUserDto {
     @IsString()
     @IsNotEmpty()
     address: string
+
+    @IsString()
+    @IsNotEmpty()
+    company: string
 
     @IsEnum(Role)
     @IsOptional()

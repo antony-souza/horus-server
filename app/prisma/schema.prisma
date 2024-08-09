@@ -10,19 +10,35 @@ datasource db {
 enum Role {
   ADMIN
   MANAGER
-  CHIEF
-  SELLER
   USER
 }
 
 model HorusUser {
-  id       String @id @default(auto()) @map("_id") @db.ObjectId
-  name     String
-  email    String @unique
-  password String
-  phone    String
-  address  String
-  role     Role   @default(USER)
-  createdAt DateTime? @default(now()) @map(name: "created_at")
-  updatedAt DateTime? @default(now()) @map(name: "updated_at")
+  id        String      @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  email     String      @unique
+  password  String
+  phone     String
+  address   String
+  role      Role        @default(USER)
+  createdAt DateTime?   @default(now()) @map(name: "created_at")
+  updatedAt DateTime?   @default(now()) @map(name: "updated_at")
+  company   String?
+}
+
+model HorusProduct {
+  id        String       @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  price     Float
+  quantity  Int
+  validaty  DateTime?    @map(name:"expiration_date")
+  createdAt DateTime?    @default(now()) @map(name: "created_at")
+  updatedAt DateTime?    @default(now()) @map(name: "updated_at")
+}
+
+model HorusCompany {
+  id        String       @id @default(auto()) @map("_id") @db.ObjectId
+  name      String       @unique
+  createdAt DateTime?    @default(now()) @map(name: "created_at")
+  updatedAt DateTime?    @default(now()) @map(name: "updated_at")
 }

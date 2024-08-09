@@ -8,6 +8,16 @@ config()
 async function bootstrap() {
 
   const app = await NestFactory.create(AppModule);
+
+  app.enableCors({
+    origin: ['http://localhost:3001'], 
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'], // Cabeçalhos permitidos
+    exposedHeaders: ['Content-Length', 'X-Knowledge'], // Cabeçalhos expostos
+    credentials: true, 
+    maxAge: 86400, // Tempo máximo para a preflight request
+});
+
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,

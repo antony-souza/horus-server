@@ -3,6 +3,7 @@ import { PrismaClient, HorusUser, Role } from '@prisma/client';
 import { UpdateUserDto } from './DTO/update.dto';
 import { BaseUserDto } from './DTO/base.user.dto';
 import { argon2id, hash } from 'argon2';
+import { CompanyDto } from './DTO/company.dto';
 
 const prisma = new PrismaClient();
 
@@ -11,11 +12,13 @@ interface UserResponse {
     user?: HorusUser;
 }
 
+
 @Injectable()
 export class ApiService {
 
     async getUsers(): Promise<{ message: string; users: HorusUser[] }> {
         const users = await prisma.horusUser.findMany();
+        
         return {
             message: 'Usuários listados com sucesso!',
             users,
@@ -27,9 +30,26 @@ export class ApiService {
             const existingUser = await prisma.horusUser.findUnique({
                 where: { email: userData.email },
             });
-
+    
             if (existingUser) {
                 throw new BadRequestException('Usuário já existe, meu patrão!');
+            }
+
+            const existingCompany = await prisma.horusCompany.findUnique({
+                where: {name: userData.company}
+            })
+            
+            let companyId
+
+            if(existingCompany){
+                companyId = existingCompany.id
+            
+            }else{
+                const newCompany = await prisma.horusCompany.create({
+                    data: {name:userData.company}
+                })
+
+                companyId = newCompany.id
             }
 
             const hashPass = await hash(userData.password, {
@@ -39,7 +59,7 @@ export class ApiService {
                 parallelism: 1,
             });
 
-            await prisma.horusUser.create({
+            const newUser = await prisma.horusUser.create({
                 data: {
                     name: userData.name,
                     email: userData.email,
@@ -47,29 +67,38 @@ export class ApiService {
                     phone: userData.phone,
                     address: userData.address,
                     role: userData.role || Role.USER,
-                }
-            });
-
+                    company: companyId
+        }});
+    
             return {
                 message: "Usuário criado com sucesso!",
+                user: newUser,
             };
         } catch (error) {
-
             console.error("Erro ao criar usuário:", error);
-
+    
             if (error instanceof BadRequestException) {
-                throw error; // Re-lança a exceção se já for uma BadRequestException
+                throw error;
             }
             throw new InternalServerErrorException("Erro interno ao criar usuário.");
         }
     }
+    
+    
 
     async updateUser(userData: UpdateUserDto): Promise<UserResponse> {
+
         try {
+            // Verifica se o ID foi fornecido
+            if (!userData.id) {
+                throw new BadRequestException('ID do usuário não fornecido.');
+            }
+    
+            // Encontra o usuário pelo ID
             const existingUser = await prisma.horusUser.findUnique({
                 where: { id: userData.id },
             });
-
+    
             if (!existingUser) {
                 throw new NotFoundException(`Usuário com ID ${userData.id} não encontrado!`);
             }
@@ -83,13 +112,13 @@ export class ApiService {
                     phone: userData.phone || existingUser.phone,
                     address: userData.address || existingUser.address,
                     role: userData.role || existingUser.role,
+                    company: userData.company || existingUser.company,
                     updatedAt: new Date(),
                 },
             });
-
+    
             return {
                 message: 'Usuário atualizado com sucesso!',
-
             };
         } catch (error) {
             console.error("Erro ao atualizar usuário:", error);

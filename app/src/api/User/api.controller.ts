@@ -6,6 +6,7 @@ import { UpdateUserDto } from './DTO/update.dto';
 import { Roles } from 'prisma/roles.decorator';
 import { RolesGuard } from 'prisma/role.guard';
 import { JwtAuthGuard } from './auth/auth.guard';
+import { CompanyDto } from './DTO/company.dto';
 
 export interface UserResponse {
     message: string;
@@ -21,11 +22,11 @@ export class ApiController {
     ){}
 
     @Get('/all')
-    @Roles(Role.ADMIN, Role.MANAGER, Role.CHIEF)
+    @Roles(Role.ADMIN, Role.MANAGER)
     async get(): Promise<UserResponse>{
         return this.HorusService.getUsers()
     }
-
+    
     @Post('/new-user')
     @Roles(Role.ADMIN)
     async create(@Body() BaseUserDto:BaseUserDto):Promise<UserResponse> {
@@ -34,7 +35,8 @@ export class ApiController {
 
     @Put('/:id')
     @Roles(Role.ADMIN,Role.MANAGER)
-    async update(@Param('id') @Body() UpdateUserDTO:UpdateUserDto):Promise<UserResponse> {
+    async update(@Param('id') id:string, @Body() UpdateUserDTO:UpdateUserDto):Promise<UserResponse> {
+        UpdateUserDTO.id = id
         return this.HorusService.updateUser(UpdateUserDTO) 
     };
 
