@@ -40,7 +40,7 @@ export class ProductService {
                         mode: 'insensitive',
                     },
                 });
-            }
+            };
 
             if (query.company) {
                 conditions.push({
