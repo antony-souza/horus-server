@@ -5,7 +5,7 @@ import { HorusUser, Role } from '@prisma/client';
 @Injectable()
 export class AuthJwtService {
     constructor(private jwtService: JwtService) {}
-
+    
     generateToken(user: HorusUser): string {
         const payload = { id: user.id, role: user.role, companyId: user.companyId };
         const secret = process.env.TOKEN_KEY;

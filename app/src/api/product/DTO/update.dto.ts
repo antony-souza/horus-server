@@ -1,25 +1,25 @@
 import { IsDateString, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID } from "class-validator";
 
-export class ProductDto {
-    
+export class UpdateProductDto {
+
     @IsString()
     @IsUUID()
     @IsOptional()
     id?: string
 
     @IsString()
-    @IsNotEmpty()
-    name: string;
-
+    @IsOptional()
+    name?: string;
+ 
     @IsNumber()
-    @IsNotEmpty()
-    quantity: number;
+    @IsOptional()
+    quantity?: number;
 
     @IsString()
-    @IsNotEmpty()
-    packaging: string
+    @IsOptional()
+    packaging?: string
 
     @IsDateString()
-    @IsNotEmpty()
+    @IsOptional()
     expirationDate?: Date;
 };

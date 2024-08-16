@@ -32,7 +32,7 @@ model HorusProduct {
   name      String
   quantity  Int
   packaging String
-  validaty  String?      @map(name:"expiration_date")
+  expirationDate  DateTime?      @map(name:"expiration_date")
   user      String?
   company   String?
   userId    String?      @db.ObjectId
