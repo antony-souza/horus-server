@@ -13,43 +13,49 @@ export interface ProductResponse {
 @Injectable()
 export class ProductService {
 
-    // Função de busca com múltiplos critérios
+    //Cara verifica com multiplos filtros e critérios
     async searchProduct(query: any): Promise<ProductResponse> {
         try {
             const conditions = [];
 
-            if (query.name) {
-                conditions.push({
-                    name: {
-                        contains: query.name,
-                        mode: 'insensitive',
-                    },
-                });
+            switch (true) {
+                case !!query.name: 
+                    conditions.push({
+                        name: { 
+                            contains: query.name, 
+                            mode: 'insensitive'
+                        }
+                    });
+                    break;
+                
+                case !!query.expirationDate:
+                    conditions.push({
+                        expirationDate: new Date(query.expirationDate)
+                    });
+                    break;
+                
+                case !!query.user:
+                    conditions.push({
+                        user: { 
+                            contains: query.user, 
+                            mode: 'insensitive'
+                        }
+                    });
+                    break;
+                
+                case !!query.company:  
+                    conditions.push({
+                        company: { 
+                            contains: query.company, 
+                            mode: 'insensitive'
+                        }
+                    });
+                    break;
+                
+                default:
+                    throw new BadRequestException('Nenhum critério de busca foi fornecido!');
             }
 
-            if (query.expirationDate) {
-                conditions.push({
-                    expirationDate: new Date(query.expirationDate),
-                });
-            }
-
-            if (query.user) {
-                conditions.push({
-                    user: {
-                        contains: query.user,
-                        mode: 'insensitive',
-                    },
-                });
-            };
-
-            if (query.company) {
-                conditions.push({
-                    company: {
-                        contains: query.company,
-                        mode: 'insensitive',
-                    },
-                });
-            }
 
             const products = await prisma.horusProduct.findMany({
                 where: {
