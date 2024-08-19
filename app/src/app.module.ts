@@ -6,8 +6,6 @@ import { AuthModule } from './api/User/auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ProductModule } from './api/product/product.module';
 
-
-
 @Module({
   imports: [PrismaModule,ApiModule,AuthModule,JwtModule, ProductModule],
   controllers: [],
