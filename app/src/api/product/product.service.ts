@@ -1,7 +1,8 @@
-import { Injectable, BadRequestException, InternalServerErrorException } from '@nestjs/common';
-import { HorusProduct, PrismaClient } from '@prisma/client';
+import { Injectable, BadRequestException, InternalServerErrorException, ForbiddenException } from '@nestjs/common';
+import {HorusProduct, PrismaClient } from '@prisma/client';
 import { ProductDto } from './DTO/product.dto';
 import { UpdateProductDto } from './DTO/update.dto';
+import { generateCodeRandom } from './other/generateCod';
 
 const prisma = new PrismaClient();
 
@@ -18,6 +19,16 @@ export class ProductService {
             const conditions = [];
 
             switch (true) {
+
+                case !!query.code: 
+                    conditions.push({
+                        code: { 
+                            contains: query.code, 
+                            mode: 'insensitive'
+                        }
+                    });
+                    break;
+
                 case !!query.name: 
                     conditions.push({
                         name: { 
@@ -29,7 +40,7 @@ export class ProductService {
                 
                 case !!query.expirationDate:
                     conditions.push({
-                        expirationDate: new Date(query.expirationDate)
+                        expirationDate: query.expirationDate
                     });
                     break;
                 
@@ -84,6 +95,14 @@ export class ProductService {
             const conditions:any[] = [{companyId}];
 
             switch (true) {
+                case !!query.code: 
+                    conditions.push({
+                        code: { 
+                            contains: query.code, 
+                            mode: 'insensitive'
+                        }
+                    });
+                    break;
                 case !!query.name: 
                     conditions.push({
                         name: { 
@@ -174,14 +193,15 @@ export class ProductService {
                 throw new BadRequestException(`Produto [${productData.name}] já existe para este usuário e empresa!Edite o produto na opção "Enviar Lote"`);
             }
 
-            const expirationDate = new Date(productData.expirationDate).toISOString();
+
 
             const newProduct = await prisma.horusProduct.create({
                 data: {
                     name: productData.name,
+                    code: generateCodeRandom(),
                     quantity: productData.quantity,
                     packaging: productData.packaging,
-                    expirationDate: expirationDate,
+                    expirationDate: productData.expirationDate,
                     user: existingUser.name,
                     company: existingUser.company,
                     userId: existingUser.id,
@@ -208,53 +228,67 @@ export class ProductService {
             const existingUser = await prisma.horusUser.findUnique({
                 where: { id: userId },
             });
-
+    
             if (!existingUser) {
                 throw new BadRequestException(`Usuário com ID [${userId}] não encontrado!`);
             }
-
+            
+            const isAdmin = existingUser.role === 'ADMIN';
+    
+            if (!isAdmin) {
+                const userCompany = existingUser.companyId;
+    
+                if (userCompany !== companyId) {
+                    throw new ForbiddenException("Você não tem permissão para operar nessa empresa.");
+                }
+            }
+    
             const existingCompany = await prisma.horusCompany.findUnique({
                 where: { id: companyId },
             });
-
+    
             if (!existingCompany) {
                 throw new BadRequestException(`Empresa com ID [${companyId}] não encontrada!`);
             }
-
+    
             const existingProduct = await prisma.horusProduct.findFirst({
-                where: {
-                    name: updateProduct.name,
+                where: isAdmin ? {
+                    code: updateProduct.code,
+                } : {
+                    code: updateProduct.code,
                     userId,
-                    companyId
+                    companyId,
                 },
             });
-
+    
             if (!existingProduct) {
-                throw new BadRequestException(`Produto [${updateProduct.name}] não encontrado para este usuário e empresa!`);
+                 throw new BadRequestException(`Produto com código [${updateProduct.code}] não encontrado para este usuário e empresa!`);
             }
+             
 
             const updatedProduct = await prisma.horusProduct.update({
                 where: { id: existingProduct.id },
                 data: {
                     quantity: existingProduct.quantity + updateProduct.quantity,
-                    packaging:  updateProduct.packaging,
-                    expirationDate: updateProduct.expirationDate
+                    packaging: updateProduct.packaging,
+                    expirationDate: updateProduct.expirationDate || existingProduct.expirationDate,
+                    updatedAt: new Date()
                 },
             });
-
+    
             return {
                 message: "Lote enviado com sucesso!",
-                products: [updatedProduct]
+                products: [updatedProduct],
             };
         } catch (error) {
             console.error("Erro ao atualizar produto:", error);
-
+    
             if (error instanceof BadRequestException) {
                 throw error;
             }
             throw new InternalServerErrorException("Erro interno ao atualizar produto.");
         }
-    }
+    };
 
     async RemoveMerchandiseProducts(updateProduct: UpdateProductDto, userId: string, companyId: string): Promise<ProductResponse> {
         try {
@@ -266,6 +300,8 @@ export class ProductService {
                 throw new BadRequestException(`Usuário com ID [${userId}] não encontrado!`);
             }
 
+            const isAdmin = existingUser.role === 'ADMIN';
+
             const existingCompany = await prisma.horusCompany.findUnique({
                 where: { id: companyId },
             });
@@ -275,13 +311,15 @@ export class ProductService {
             }
 
             const existingProduct = await prisma.horusProduct.findFirst({
-                where: {
-                    name: updateProduct.name,
+                where: isAdmin ? {
+                        code: updateProduct.code
+                    }:{
+                    code: updateProduct.code,
                     userId,
                     companyId
                 },
             });
-
+            
             if (!existingProduct) {
                 throw new BadRequestException(`Produto [${updateProduct.name}] não encontrado para este usuário e empresa!`);
             }
@@ -291,8 +329,20 @@ export class ProductService {
                 data: {
                     quantity: existingProduct.quantity - updateProduct.quantity,
                     packaging:  updateProduct.packaging,
+                    updatedAt: new Date()
                 },
             });
+
+            if (updatedProduct.quantity <= 0) {
+                await prisma.horusProduct.delete({
+                    where: { id: existingProduct.id }
+                });
+    
+                return {
+                    message: "Mercadoria retirada com sucesso! O produto foi zerado e removido do sistema.",
+                    products: []
+                };
+            }
 
             return {
                 message: "Mercadoria retirada com sucesso!",

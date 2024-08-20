@@ -9,6 +9,10 @@ export class ProductSearchDto {
 
     @IsString()
     @IsOptional()
+    code?: string
+
+    @IsString()
+    @IsOptional()
     name?: string;
 
     @IsNumber()

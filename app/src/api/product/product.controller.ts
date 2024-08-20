@@ -7,6 +7,7 @@ import { Roles } from 'prisma/roles.decorator';
 import { ProductDto } from './DTO/product.dto';
 import { UpdateProductDto } from './DTO/update.dto';
 
+
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('product')
 export class ProductController {

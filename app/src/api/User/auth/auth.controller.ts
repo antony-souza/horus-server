@@ -1,7 +1,6 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { SigInDto} from './DTO/auth.dto';
 import { LoginAuthService } from './login.service';
-import { HorusUser } from '@prisma/client';
 
 @Controller('')
 export class AuthController {

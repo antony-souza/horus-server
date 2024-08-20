@@ -3,7 +3,6 @@ import { PrismaClient, HorusUser, Role } from '@prisma/client';
 import { UpdateUserDto } from './DTO/update.dto';
 import { BaseUserDto } from './DTO/base.user.dto';
 import { argon2id, hash } from 'argon2';
-import { CompanyDto } from './DTO/company.dto';
 
 const prisma = new PrismaClient();
 

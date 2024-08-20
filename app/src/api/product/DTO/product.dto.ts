@@ -8,6 +8,10 @@ export class ProductDto {
     id?: string
 
     @IsString()
+    @IsOptional()
+    code?: string
+
+    @IsString()
     @IsNotEmpty()
     name: string;
 

@@ -29,6 +29,7 @@ model HorusUser {
 
 model HorusProduct {
   id        String       @id @default(auto()) @map("_id") @db.ObjectId
+  code      String       @unique
   name      String
   quantity  Int
   packaging String
