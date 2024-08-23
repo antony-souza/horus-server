@@ -1,4 +1,3 @@
-import { Schema } from "@nestjs/mongoose";
 import { IsNotEmpty, IsString } from "class-validator";
 
 

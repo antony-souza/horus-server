@@ -14,13 +14,12 @@ const api_module_1 = require("./api/User/api.module");
 const auth_module_1 = require("./api/User/auth/auth.module");
 const jwt_1 = require("@nestjs/jwt");
 const product_module_1 = require("./api/product/product.module");
-const company_module_1 = require("./api/company/company.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule, api_module_1.ApiModule, auth_module_1.AuthModule, jwt_1.JwtModule, product_module_1.ProductModule, company_module_1.CompanyModule],
+        imports: [prisma_module_1.PrismaModule, api_module_1.ApiModule, auth_module_1.AuthModule, jwt_1.JwtModule, product_module_1.ProductModule],
         controllers: [],
         providers: [prisma_service_1.default]
     })

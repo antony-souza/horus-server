@@ -5,22 +5,21 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.ApiModule = void 0;
-const common_1 = require("@nestjs/common");
-const api_service_1 = require("./api.service");
-const api_controller_1 = require("./api.controller");
-const auth_module_1 = require("./auth/auth.module");
-const jwt_1 = require("@nestjs/jwt");
-const client_1 = require("@prisma/client");
-let ApiModule = class ApiModule {
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-exports.ApiModule = ApiModule;
-exports.ApiModule = ApiModule = __decorate([
-    (0, common_1.Module)({
-        imports: [auth_module_1.AuthModule, jwt_1.JwtModule],
-        controllers: [api_controller_1.ApiController],
-        providers: [api_service_1.ApiService, , client_1.PrismaClient],
-    })
-], ApiModule);
-//# sourceMappingURL=api.module.js.map
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.FiltersController = void 0;
+const common_1 = require("@nestjs/common");
+const filters_service_1 = require("./filters.service");
+let FiltersController = class FiltersController {
+    constructor(FiltersService) {
+        this.FiltersService = FiltersService;
+    }
+};
+exports.FiltersController = FiltersController;
+exports.FiltersController = FiltersController = __decorate([
+    (0, common_1.Controller)('filters'),
+    __metadata("design:paramtypes", [filters_service_1.FiltersService])
+], FiltersController);
+//# sourceMappingURL=filters.controller.js.map

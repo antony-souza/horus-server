@@ -4,26 +4,28 @@ import { UpdateUserDto } from './DTO/update.dto';
 import { BaseUserDto } from './DTO/base.user.dto';
 import { argon2id, hash } from 'argon2';
 
+
 const prisma = new PrismaClient();
 
-interface UserResponse {
+export interface UserResponse {
     message: string;
     user?: HorusUser;
+    results?: HorusUser[]
 }
 
 
 @Injectable()
 export class ApiService {
 
-    async getUsers(): Promise<{ message: string; users: HorusUser[] }> {
-        const users = await prisma.horusUser.findMany();
-        
-        return {
-            message: 'Usuários listados com sucesso!',
-            users,
-        };
-    }
 
+    async filterUsers(query: any){
+        try {
+
+        } catch (error) {
+            
+        }
+    }
+    
     async createUser(userData: BaseUserDto): Promise<UserResponse> {
         try {
             const existingUser = await prisma.horusUser.findUnique({

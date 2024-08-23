@@ -9,7 +9,7 @@ import { UpdateProductDto } from './DTO/update.dto';
 
 
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Controller('product')
+@Controller('/product')
 export class ProductController {
 
     constructor(private readonly productService: ProductService) {}

@@ -1,18 +1,11 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
-import { HorusUser, Role } from '@prisma/client';
-import { ApiService } from './api.service';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { Role } from '@prisma/client';
+import { ApiService, UserResponse } from './api.service';
 import { BaseUserDto } from './DTO/base.user.dto';
 import { UpdateUserDto } from './DTO/update.dto';
 import { Roles } from 'prisma/roles.decorator';
 import { RolesGuard } from 'prisma/role.guard';
 import { JwtAuthGuard } from './auth/auth.guard';
-import { CompanyDto } from './DTO/company.dto';
-
-export interface UserResponse {
-    message: string;
-    user?: HorusUser; 
-    users?: HorusUser[]; 
-}
 
 @Controller('api')
 @UseGuards(JwtAuthGuard,RolesGuard)
@@ -20,12 +13,6 @@ export class ApiController {
     constructor (
         private readonly HorusService : ApiService, 
     ){}
-
-    @Get('/all')
-    @Roles(Role.ADMIN, Role.MANAGER)
-    async get(): Promise<UserResponse>{
-        return this.HorusService.getUsers()
-    }
     
     @Post('/new-user')
     @Roles(Role.ADMIN)

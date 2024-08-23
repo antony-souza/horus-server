@@ -97,7 +97,7 @@ __decorate([
 ], ProductController.prototype, "removeMerchandise", null);
 exports.ProductController = ProductController = __decorate([
     (0, common_1.UseGuards)(auth_guard_1.JwtAuthGuard, role_guard_1.RolesGuard),
-    (0, common_1.Controller)('product'),
+    (0, common_1.Controller)('/product'),
     __metadata("design:paramtypes", [product_service_1.ProductService])
 ], ProductController);
 //# sourceMappingURL=product.controller.js.map

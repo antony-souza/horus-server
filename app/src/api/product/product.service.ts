@@ -2,7 +2,8 @@ import { Injectable, BadRequestException, InternalServerErrorException, Forbidde
 import {HorusProduct, PrismaClient } from '@prisma/client';
 import { ProductDto } from './DTO/product.dto';
 import { UpdateProductDto } from './DTO/update.dto';
-import { generateCodeRandom } from './other/generateCod';
+import { generateCode } from './other/generateCod';
+
 
 const prisma = new PrismaClient();
 
@@ -18,54 +19,51 @@ export class ProductService {
         try {
             const conditions = [];
 
-            switch (true) {
-
-                case !!query.code: 
-                    conditions.push({
-                        code: { 
-                            contains: query.code, 
-                            mode: 'insensitive'
-                        }
-                    });
-                    break;
-
-                case !!query.name: 
-                    conditions.push({
-                        name: { 
-                            contains: query.name, 
-                            mode: 'insensitive'
-                        }
-                    });
-                    break;
-                
-                case !!query.expirationDate:
-                    conditions.push({
-                        expirationDate: query.expirationDate
-                    });
-                    break;
-                
-                case !!query.user:
-                    conditions.push({
-                        user: { 
-                            contains: query.user, 
-                            mode: 'insensitive'
-                        }
-                    });
-                    break;
-                
-                case !!query.company:  
-                    conditions.push({
-                        company: { 
-                            contains: query.company, 
-                            mode: 'insensitive'
-                        }
-                    });
-                    break;
-                
-                default:
-                    throw new BadRequestException('Nenhum critério de busca foi fornecido!');
+            if (query.code) {
+                conditions.push({
+                    code: {
+                        contains: query.code,
+                        mode: 'insensitive',
+                    },
+                });
             }
-
+    
+            if (query.name) {
+                conditions.push({
+                    name: {
+                        contains: query.name,
+                        mode: 'insensitive',
+                    },
+                });
+            }
+    
+            if (query.expirationDate) {
+                conditions.push({
+                    expirationDate: query.expirationDate,
+                });
+            }
+    
+            if (query.user) {
+                conditions.push({
+                    user: {
+                        contains: query.user,
+                        mode: 'insensitive',
+                    },
+                });
+            }
+    
+            if (query.company) {
+                conditions.push({
+                    company: {
+                        contains: query.company,
+                        mode: 'insensitive',
+                    },
+                });
+            }
+            
+            if(conditions.length === 0){
+                throw new BadRequestException('Nenhum critério de busca foi fornecido!')
+            }
 
             const products = await prisma.horusProduct.findMany({
                 where: {
@@ -94,50 +92,50 @@ export class ProductService {
         try {
             const conditions:any[] = [{companyId}];
 
-            switch (true) {
-                case !!query.code: 
-                    conditions.push({
-                        code: { 
-                            contains: query.code, 
-                            mode: 'insensitive'
-                        }
-                    });
-                    break;
-                case !!query.name: 
-                    conditions.push({
-                        name: { 
-                            contains: query.name, 
-                            mode: 'insensitive'
-                        }
-                    });
-                    break;
-                
-                case !!query.expirationDate:
-                    conditions.push({
-                        expirationDate: new Date(query.expirationDate)
-                    });
-                    break;
-                
-                case !!query.user:
-                    conditions.push({
-                        user: { 
-                            contains: query.user, 
-                            mode: 'insensitive'
-                        }
-                    });
-                    break;
-                
-                case !!query.company:  
-                    conditions.push({
-                        company: { 
-                            contains: query.company, 
-                            mode: 'insensitive'
-                        }
-                    });
-                    break;
-                
-                default:
-                    throw new BadRequestException('Nenhum critério de busca foi fornecido!');
+            if (query.code) {
+                conditions.push({
+                    code: {
+                        contains: query.code,
+                        mode: 'insensitive',
+                    },
+                });
+            }
+    
+            if (query.name) {
+                conditions.push({
+                    name: {
+                        contains: query.name,
+                        mode: 'insensitive',
+                    },
+                });
+            }
+    
+            if (query.expirationDate) {
+                conditions.push({
+                    expirationDate: query.expirationDate,
+                });
+            }
+    
+            if (query.user) {
+                conditions.push({
+                    user: {
+                        contains: query.user,
+                        mode: 'insensitive',
+                    },
+                });
+            }
+    
+            if (query.company) {
+                conditions.push({
+                    company: {
+                        contains: query.company,
+                        mode: 'insensitive',
+                    },
+                });
+            }
+            
+            if (conditions.length === 1) {
+                throw new BadRequestException('Nenhum critério de busca foi fornecido!');
             }
 
             const products = await prisma.horusProduct.findMany({
@@ -198,7 +196,7 @@ export class ProductService {
             const newProduct = await prisma.horusProduct.create({
                 data: {
                     name: productData.name,
-                    code: generateCodeRandom(),
+                    code: generateCode(),
                     quantity: productData.quantity,
                     packaging: productData.packaging,
                     expirationDate: productData.expirationDate,

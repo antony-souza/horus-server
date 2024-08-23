@@ -12,12 +12,11 @@ const client_1 = require("@prisma/client");
 const argon2_1 = require("argon2");
 const prisma = new client_1.PrismaClient();
 let ApiService = class ApiService {
-    async getUsers() {
-        const users = await prisma.horusUser.findMany();
-        return {
-            message: 'Usuários listados com sucesso!',
-            users,
-        };
+    async filterUsers(query) {
+        try {
+        }
+        catch (error) {
+        }
     }
     async createUser(userData) {
         try {

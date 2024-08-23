@@ -6,21 +6,18 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ApiModule = void 0;
+exports.FiltersModule = void 0;
 const common_1 = require("@nestjs/common");
-const api_service_1 = require("./api.service");
-const api_controller_1 = require("./api.controller");
-const auth_module_1 = require("./auth/auth.module");
-const jwt_1 = require("@nestjs/jwt");
+const filters_controller_1 = require("./filters.controller");
+const filters_service_1 = require("./filters.service");
 const client_1 = require("@prisma/client");
-let ApiModule = class ApiModule {
+let FiltersModule = class FiltersModule {
 };
-exports.ApiModule = ApiModule;
-exports.ApiModule = ApiModule = __decorate([
+exports.FiltersModule = FiltersModule;
+exports.FiltersModule = FiltersModule = __decorate([
     (0, common_1.Module)({
-        imports: [auth_module_1.AuthModule, jwt_1.JwtModule],
-        controllers: [api_controller_1.ApiController],
-        providers: [api_service_1.ApiService, , client_1.PrismaClient],
+        controllers: [filters_controller_1.FiltersController],
+        providers: [filters_service_1.FiltersService, client_1.PrismaClient],
     })
-], ApiModule);
-//# sourceMappingURL=api.module.js.map
+], FiltersModule);
+//# sourceMappingURL=filters.module.js.map
